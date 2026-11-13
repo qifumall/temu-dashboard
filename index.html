@@ -803,7 +803,7 @@ function cmp(all){
     const canc=Object.keys(stBy).filter(k=>stBy[k].every(x=>x==='已取消')).length;
     let cost=0; v.forEach(r=>{const p=pp(r.shop,r.sku); if(p!=null) cost+=p*r.q;});
     let fee=0; new Set(v.map(key)).forEach(k=>{const l=LOG[k]; if(l&&l.f>0) fee+=l.f;});
-    const sub=shipSub(v).sub, refund=Math.round(amt*REFUND_RATE*100)/100;
+    const sub=shipSub(v).sub, refund=amt*REFUND_RATE;
     const inc=amt+sub;
     const profit=inc-cost-fee-refund, mr=inc?profit/inc*100:0;
     return {s:s,amt:amt,sub:sub,refund:refund,qty:qty,o:o,aov:o?amt/o:0,canc:ao?canc/ao*100:0,ao:ao,cancN:canc,
