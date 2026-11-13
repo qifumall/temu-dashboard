@@ -25,6 +25,18 @@ select:focus,input:focus{border-color:var(--ac)}
 .kpi.hero{background:linear-gradient(140deg,#2a1608,#1a2430 70%);border-color:#3a2a1c}
 .kpi.hero .v{color:#ffb271}
 .kpi.hero:after{content:"";position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,rgba(255,122,26,.28),transparent 70%)}
+.board{margin-bottom:14px;display:flex;flex-direction:column}
+.board h2{margin-bottom:2px}
+.board .kpis{margin:12px 0 0;flex:1;align-items:stretch}
+.board .kpi{background:#12171f;border-color:#1e252e;display:flex;flex-direction:column;justify-content:center}
+.board.inc{border-color:rgba(255,122,26,.32)}
+.board.exp{border-color:rgba(239,68,68,.3)}
+.board.gp{border-color:rgba(52,211,153,.3)}
+.kpi .v.inc{color:#ff9f45}
+.kpi .v.exp{color:#ef4444}
+.kpi .v.gp{color:#34d399}
+.kpis.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.kpis.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .grid{display:grid;grid-template-columns:minmax(0,1.62fr) minmax(0,1fr);gap:14px;margin-bottom:14px}
 .grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-bottom:14px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
@@ -162,14 +174,30 @@ footer{text-align:center;color:var(--gray);font-size:11.5px;margin-top:20px}
 
 <div class="sec"><b>收支分析</b><span>营收 − 采购支出 − 物流支出 = 毛利 · 随筛选条件实时更新</span><i></i></div>
 
-<div class="kpis">
- <div class="kpi hero"><div class="k">营收 (CNY)</div><div class="v" id="f1">¥0</div><div class="d" id="f1d">—</div></div>
- <div class="kpi"><div class="k">采购支出</div><div class="v" id="f2">¥0</div><div class="d" id="f2d">—</div></div>
- <div class="kpi"><div class="k">物流支出</div><div class="v" id="f3">¥0</div><div class="d" id="f3d">—</div></div>
- <div class="kpi"><div class="k">合计支出</div><div class="v" id="f4">¥0</div><div class="d" id="f4d">—</div></div>
- <div class="kpi"><div class="k">毛利</div><div class="v" id="f5">¥0</div><div class="d" id="f5d">—</div></div>
- <div class="kpi"><div class="k">毛利率</div><div class="v" id="f6">0%</div><div class="d">毛利 / 营收</div></div>
- <div class="kpi" title="平台物流补贴：单件且申报单价 &lt; ¥100 的订单，每单补贴 ¥26.10；多件订单、单价 ≥ ¥100 及退款订单为 ¥0。规则已用 2026-11-13 结算数据校验，61/61 单判定一致"><div class="k">运费回款 (预估)</div><div class="v" id="f7" style="color:#34d399">¥0</div><div class="d" id="f7d">—</div></div>
+<div class="grid2" style="align-items:stretch">
+ <div class="panel board inc">
+  <h2>收入项</h2><div class="hint">营收 + 平台运费回款（物流补贴）</div>
+  <div class="kpis two">
+   <div class="kpi hero"><div class="k">营收 (CNY)</div><div class="v inc" id="f1">¥0</div><div class="d" id="f1d">—</div></div>
+   <div class="kpi" title="平台物流补贴：单件且申报单价 &lt; ¥100 的订单，每单补贴 ¥26.10；多件订单、单价 ≥ ¥100 及退款订单为 ¥0。规则已用 2026-11-13 结算数据校验，61/61 单判定一致"><div class="k">运费回款 (预估)</div><div class="v inc" id="f7">¥0</div><div class="d" id="f7d">—</div></div>
+  </div>
+ </div>
+ <div class="panel board exp">
+  <h2>支出项</h2><div class="hint">采购支出 + 物流支出</div>
+  <div class="kpis three">
+   <div class="kpi"><div class="k">采购支出</div><div class="v exp" id="f2">¥0</div><div class="d" id="f2d">—</div></div>
+   <div class="kpi"><div class="k">物流支出</div><div class="v exp" id="f3">¥0</div><div class="d" id="f3d">—</div></div>
+   <div class="kpi"><div class="k">合计支出</div><div class="v exp" id="f4">¥0</div><div class="d" id="f4d">—</div></div>
+  </div>
+ </div>
+</div>
+
+<div class="panel board gp">
+ <h2>毛利</h2><div class="hint">营收 − 采购支出 − 物流支出（运费回款为预估补贴，未计入）</div>
+ <div class="kpis two" style="margin:12px 0 0">
+  <div class="kpi"><div class="k">毛利</div><div class="v gp" id="f5">¥0</div><div class="d" id="f5d">—</div></div>
+  <div class="kpi"><div class="k">毛利率</div><div class="v gp" id="f6">0%</div><div class="d">毛利 / 营收</div></div>
+ </div>
 </div>
 
 <div class="grid2" style="align-items:start">
@@ -498,7 +526,6 @@ function fin(list){
   $('f3').textContent='¥'+f2(fee); $('f3d').textContent=lg.ch.length+' 单已计费 / 共 '+lg.arr.length+' 单';
   $('f4').textContent='¥'+f2(exp); $('f4d').textContent='占营收 '+(cr+fr).toFixed(1)+'%';
   $('f5').textContent='¥'+f2(profit); $('f5d').textContent='营收 − 采购 − 物流';
-  $('f5').style.color=profit>=0?'#34d399':'#f87171';
   $('f6').textContent=mr.toFixed(1)+'%';
   const sb=shipSub(list);
   $('f7').textContent='¥'+f2(sb.sub);
