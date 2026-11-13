@@ -37,6 +37,8 @@ select:focus,input:focus{border-color:var(--ac)}
 .kpi .v.gp{color:#34d399}
 .kpis.two{grid-template-columns:repeat(2,minmax(0,1fr))}
 .kpis.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kpis.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.tscroll{overflow-x:auto}
 .grid{display:grid;grid-template-columns:minmax(0,1.62fr) minmax(0,1fr);gap:14px;margin-bottom:14px}
 .grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-bottom:14px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
@@ -127,7 +129,7 @@ footer{text-align:center;color:var(--gray);font-size:11.5px;margin-top:20px}
 .mgrid>div{background:#161b22;border:1px solid #1e252e;border-radius:12px;padding:12px 14px}
 .mgrid h4{margin:0 0 8px;font-size:12.5px;font-weight:600;color:#c3cad4}
 @media(max-width:900px){.mgrid{grid-template-columns:1fr}}
-@media(max-width:980px){.grid,.grid2{grid-template-columns:1fr}}
+@media(max-width:980px){.grid,.grid2{grid-template-columns:1fr}.kpis.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .sec{display:flex;align-items:center;gap:12px;margin:26px 0 13px;flex-wrap:wrap}
 .sec b{font-size:15px;letter-spacing:1.5px;padding:5px 14px;border-radius:8px;
  background:rgba(255,122,26,.13);border:1px solid rgba(255,122,26,.45);color:#ffa869}
@@ -172,7 +174,7 @@ footer{text-align:center;color:var(--gray);font-size:11.5px;margin-top:20px}
  </div>
 </header>
 
-<div class="sec"><b>收支分析</b><span>营收 − 采购支出 − 物流支出 = 毛利 · 随筛选条件实时更新</span><i></i></div>
+<div class="sec"><b>收支分析</b><span>收入项（营收 + 运费回款）− 支出项（采购 + 物流 + 销售冲回）= 毛利 · 随筛选条件实时更新</span><i></i></div>
 
 <div class="grid2" style="align-items:stretch">
  <div class="panel board inc">
@@ -183,31 +185,32 @@ footer{text-align:center;color:var(--gray);font-size:11.5px;margin-top:20px}
   </div>
  </div>
  <div class="panel board exp">
-  <h2>支出项</h2><div class="hint">采购支出 + 物流支出</div>
-  <div class="kpis three">
+  <h2>支出项</h2><div class="hint">采购支出 + 物流支出 + 销售冲回（退款）</div>
+  <div class="kpis four">
    <div class="kpi"><div class="k">采购支出</div><div class="v exp" id="f2">¥0</div><div class="d" id="f2d">—</div></div>
    <div class="kpi"><div class="k">物流支出</div><div class="v exp" id="f3">¥0</div><div class="d" id="f3d">—</div></div>
+   <div class="kpi" title="销售冲回（退款）：结算数据实测 销售冲回 ÷ 销售回款 = 305.16 / 7687.61 = 3.97%，RAW 无退款字段，按销售额 × 3.97% 估算"><div class="k">销售冲回</div><div class="v exp" id="f8">¥0</div><div class="d" id="f8d">—</div></div>
    <div class="kpi"><div class="k">合计支出</div><div class="v exp" id="f4">¥0</div><div class="d" id="f4d">—</div></div>
   </div>
  </div>
 </div>
 
 <div class="panel board gp">
- <h2>毛利</h2><div class="hint">营收 − 采购支出 − 物流支出（运费回款为预估补贴，未计入）</div>
+ <h2>毛利</h2><div class="hint">收入项（营收 + 运费回款）− 支出项（采购 + 物流 + 销售冲回）</div>
  <div class="kpis two" style="margin:12px 0 0">
   <div class="kpi"><div class="k">毛利</div><div class="v gp" id="f5">¥0</div><div class="d" id="f5d">—</div></div>
-  <div class="kpi"><div class="k">毛利率</div><div class="v gp" id="f6">0%</div><div class="d">毛利 / 营收</div></div>
+  <div class="kpi"><div class="k">毛利率</div><div class="v gp" id="f6">0%</div><div class="d">毛利 / 收入项</div></div>
  </div>
 </div>
 
 <div class="grid2" style="align-items:start">
- <div class="panel"><h2>收支结构</h2><div class="hint">营收 − 采购支出 − 物流支出 = 毛利 · 物流仅统计已计费运单，近期未计费订单毛利会偏高</div><div id="finbars"></div></div>
+ <div class="panel"><h2>收支结构</h2><div class="hint">收入项 − 支出项 = 毛利 · 销售冲回按 3.97% 估算 · 物流仅统计已计费运单，近期未计费订单毛利会偏高</div><div id="finbars"></div></div>
  <div class="panel"><h2>采购支出 TOP 10</h2><div class="hint">按 SKU 采购成本排序 · 采购成本 = 采购单价 × 件数 · 销售价格取区间均价</div><div id="costbars"></div></div>
 </div>
 
-<div class="panel" id="cmp" style="margin-bottom:14px"><h2>店铺对比</h2><div class="hint">当前时间区间内的营收与支出综合视图 · 点击行可切换到该店铺</div>
-<table><thead><tr><th>店铺</th><th class="num">销售额</th><th class="num">采购支出</th><th class="num">物流支出</th><th class="num">毛利</th><th class="num">毛利率</th><th class="num">订单数</th><th class="num">件数</th><th class="num">客单价</th><th class="num">取消率</th><th class="num">占比</th></tr></thead>
-<tbody id="cmpb"></tbody></table></div>
+<div class="panel" id="cmp" style="margin-bottom:14px"><h2>店铺对比</h2><div class="hint">收入项（销售额 + 运费回款）− 支出项（采购 + 物流 + 销售冲回）= 毛利 · 点击行可切换到该店铺</div>
+<div class="tscroll"><table><thead><tr><th>店铺</th><th class="num">销售额</th><th class="num">运费回款</th><th class="num">采购支出</th><th class="num">物流支出</th><th class="num">销售冲回</th><th class="num">毛利</th><th class="num">毛利率</th><th class="num">订单数</th><th class="num">件数</th><th class="num">客单价</th><th class="num">取消率</th><th class="num">占比</th></tr></thead>
+<tbody id="cmpb"></tbody></table></div></div>
 
 <div class="mask" id="lmask">
  <div class="modal">
@@ -330,6 +333,8 @@ const DMAX=RAW.reduce((m,r)=>r.t>m?r.t:m,'');
 
 // 运费回款（平台物流补贴）预估：单件 + 申报单价 < ¥100 + 未取消 → ¥26.10，其余 ¥0
 const SUBFEE=26.10, SUBLIMIT=100;
+// 销售冲回（退款）预估：2026-11-13 结算实测 305.16 / 7687.61 = 3.9691%，RAW 无退款字段，按销售额比例估算
+const REFUND_RATE=0.039691;
 const ORD={};
 RAW.forEach(r=>{(ORD[r.o]||(ORD[r.o]=[])).push(r);});
 function shipSub(list){
@@ -515,42 +520,47 @@ function fin(list){
   });
   cost=Math.round(cost*100)/100;
   const lg=logiAgg(list), fee=lg.fee;
-  const exp=cost+fee, profit=rev-exp;
-  const cr=rev?cost/rev*100:0, fr=rev?fee/rev*100:0, mr=rev?profit/rev*100:0;
+  const sb=shipSub(list), sub=sb.sub;
+  const refund=Math.round(rev*REFUND_RATE*100)/100;
+  const inc=rev+sub, exp=cost+fee+refund, profit=inc-exp;
+  const cr=inc?cost/inc*100:0, fr=inc?fee/inc*100:0, rf=inc?refund/inc*100:0, mr=inc?profit/inc*100:0;
   const cov=covQ+unkQ?covQ/(covQ+unkQ)*100:0;
-  $('secrev').textContent='¥'+f2(rev);
+  $('secrev').textContent='¥'+f2(inc);
   $('secexp').textContent='¥'+f2(exp);
   $('f1').textContent='¥'+f2(rev); $('f1d').textContent=list.length+' 条销售明细 · 不含取消';
   $('f2').textContent='¥'+f2(cost);
   $('f2d').textContent='覆盖 '+cov.toFixed(1)+'%（件数）· 未配置 '+Object.keys(unks).length+' SKU';
   $('f3').textContent='¥'+f2(fee); $('f3d').textContent=lg.ch.length+' 单已计费 / 共 '+lg.arr.length+' 单';
-  $('f4').textContent='¥'+f2(exp); $('f4d').textContent='占营收 '+(cr+fr).toFixed(1)+'%';
-  $('f5').textContent='¥'+f2(profit); $('f5d').textContent='营收 − 采购 − 物流';
+  $('f8').textContent='¥'+f2(refund); $('f8d').textContent='按销售额 '+(REFUND_RATE*100).toFixed(2)+'% 估算';
+  $('f4').textContent='¥'+f2(exp); $('f4d').textContent='占收入项 '+(cr+fr+rf).toFixed(1)+'%';
+  $('f5').textContent='¥'+f2(profit); $('f5d').textContent='收入项 ¥'+f2(inc)+' − 支出项 ¥'+f2(exp);
   $('f6').textContent=mr.toFixed(1)+'%';
-  const sb=shipSub(list);
-  $('f7').textContent='¥'+f2(sb.sub);
+  $('f7').textContent='¥'+f2(sub);
   $('f7d').textContent='合格 '+sb.ok+'/'+sb.tot+' 单 · 日均 ¥'+f0(sb.avg)+' · 月化 ¥'+f0(sb.avg*30);
   const rows=[
     ['营收',rev,'#ff7a1a','销售额口径，不含已取消'],
+    ['运费回款',sub,'#ff9f45','合格 '+sb.ok+'/'+sb.tot+' 单 × ¥'+SUBFEE.toFixed(2)],
     ['采购支出',cost,'#38bdf8','采购价覆盖 '+cov.toFixed(1)+'%（按件数）'],
     ['物流支出',fee,'#a78bfa','仅已计费运单'],
-    ['毛利',profit,'#34d399','营收 − 采购 − 物流']
+    ['销售冲回',refund,'#ef4444','按销售额 '+(REFUND_RATE*100).toFixed(2)+'% 估算'],
+    ['毛利',profit,'#34d399','收入项 − 支出项']
   ];
   const mx=Math.max(1,...rows.map(r=>Math.abs(r[1])));
   const orders=new Set(list.map(r=>r.shop+'|'+r.o)).size||1;
   const qty=list.reduce((s,r)=>s+r.q,0)||1;
-  const cw=rev?Math.max(0,cost/rev*100):0, fw=rev?Math.max(0,fee/rev*100):0, pw=rev?Math.max(0,profit/rev*100):0;
+  const cw=inc?Math.max(0,cost/inc*100):0, fw=inc?Math.max(0,fee/inc*100):0, rw=inc?Math.max(0,refund/inc*100):0, pw=inc?Math.max(0,profit/inc*100):0;
   const mini=[['单均营收',rev/orders],['单均采购成本',cost/orders],['单均运费',lg.ch.length?fee/lg.ch.length:0],['件均采购成本',cost/qty]];
   $('finbars').innerHTML=rows.map(r=>`<div class="finrow"><div class="fh"><span>${r[0]}</span>
    <b style="color:${r[2]}">¥${f2(r[1])}</b></div>
    <div class="ft"><i style="width:${Math.max(2,Math.abs(r[1])/mx*100).toFixed(1)}%;background:linear-gradient(90deg,${r[2]},${r[2]}66)"></i></div>
-   <div class="fm">占营收 ${(rev?(r[1]/rev*100):0).toFixed(1)}% · ${r[3]}</div></div>`).join('')
-   +`<div class="finrow" style="margin-top:18px"><div class="fh"><span>营收构成</span><b>¥${f2(rev)}</b></div>
+   <div class="fm">占收入项 ${(inc?(r[1]/inc*100):0).toFixed(1)}% · ${r[3]}</div></div>`).join('')
+   +`<div class="finrow" style="margin-top:18px"><div class="fh"><span>收入项构成</span><b>¥${f2(inc)}</b></div>
    <div style="display:flex;height:12px;border-radius:6px;overflow:hidden;background:#1b222b">
     <i style="width:${cw.toFixed(1)}%;background:#38bdf8"></i>
     <i style="width:${fw.toFixed(1)}%;background:#a78bfa"></i>
+    <i style="width:${rw.toFixed(1)}%;background:#ef4444"></i>
     <i style="flex:1;background:#34d399"></i></div>
-   <div class="fm">采购 ${cw.toFixed(1)}% · 物流 ${fw.toFixed(1)}% · 毛利 ${pw.toFixed(1)}%</div></div>
+   <div class="fm">采购 ${cw.toFixed(1)}% · 物流 ${fw.toFixed(1)}% · 冲回 ${rw.toFixed(1)}% · 毛利 ${pw.toFixed(1)}%</div></div>
    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-top:16px;padding-top:13px;border-top:1px solid #1e252e">
     ${mini.map(m=>`<div><div style="font-size:11px;color:#8b95a5">${m[0]}</div>
      <div style="font-size:15px;font-weight:600;color:#c3cad4;font-variant-numeric:tabular-nums">¥${f2(m[1])}</div></div>`).join('')}
@@ -793,26 +803,33 @@ function cmp(all){
     const canc=Object.keys(stBy).filter(k=>stBy[k].every(x=>x==='已取消')).length;
     let cost=0; v.forEach(r=>{const p=pp(r.shop,r.sku); if(p!=null) cost+=p*r.q;});
     let fee=0; new Set(v.map(key)).forEach(k=>{const l=LOG[k]; if(l&&l.f>0) fee+=l.f;});
-    const profit=amt-cost-fee, mr=amt?profit/amt*100:0;
-    return {s:s,amt:amt,qty:qty,o:o,aov:o?amt/o:0,canc:ao?canc/ao*100:0,ao:ao,cancN:canc,
+    const sub=shipSub(v).sub, refund=Math.round(amt*REFUND_RATE*100)/100;
+    const inc=amt+sub;
+    const profit=inc-cost-fee-refund, mr=inc?profit/inc*100:0;
+    return {s:s,amt:amt,sub:sub,refund:refund,qty:qty,o:o,aov:o?amt/o:0,canc:ao?canc/ao*100:0,ao:ao,cancN:canc,
             cost:cost,fee:fee,profit:profit,mr:mr};
   });
   const tot=rows.reduce((a,r)=>a+r.amt,0)||1;
   const trs=rows.map(r=>`<tr data-shop="${r.s}" style="cursor:pointer" title="切换到 ${r.s}">
    <td>${r.s}</td><td class="num" style="font-weight:600">¥${f2(r.amt)}</td>
+   <td class="num" style="color:#ff9f45">¥${f2(r.sub)}</td>
    <td class="num" style="color:#7dd3fc">¥${f2(r.cost)}</td>
    <td class="num" style="color:#c4b5fd">¥${f2(r.fee)}</td>
+   <td class="num" style="color:#ef4444">¥${f2(r.refund)}</td>
    <td class="num" style="color:${r.profit>=0?'#34d399':'#f87171'}">¥${f2(r.profit)}</td>
    <td class="num" style="color:${r.profit>=0?'#34d399':'#f87171'}">${r.mr.toFixed(1)}%</td>
    <td class="num">${r.o}</td>
    <td class="num">${r.qty}</td><td class="num">¥${f2(r.aov)}</td>
    <td class="num">${r.canc.toFixed(1)}%</td><td class="num" style="color:#8b95a5">${(r.amt/tot*100).toFixed(1)}%</td></tr>`).join('');
-  const sum=rows.reduce((a,r)=>({amt:a.amt+r.amt,qty:a.qty+r.qty,o:a.o+r.o,cost:a.cost+r.cost,fee:a.fee+r.fee,profit:a.profit+r.profit}),{amt:0,qty:0,o:0,cost:0,fee:0,profit:0});
+  const sum=rows.reduce((a,r)=>({amt:a.amt+r.amt,sub:a.sub+r.sub,refund:a.refund+r.refund,qty:a.qty+r.qty,o:a.o+r.o,cost:a.cost+r.cost,fee:a.fee+r.fee,profit:a.profit+r.profit}),{amt:0,sub:0,refund:0,qty:0,o:0,cost:0,fee:0,profit:0});
+  const sInc=sum.amt+sum.sub;
   $('cmpb').innerHTML=trs+`<tr><td><b>合计</b></td><td class="num" style="font-weight:700;color:#ffb271">¥${f2(sum.amt)}</td>
+   <td class="num" style="font-weight:600;color:#ff9f45">¥${f2(sum.sub)}</td>
    <td class="num" style="font-weight:600;color:#7dd3fc">¥${f2(sum.cost)}</td>
    <td class="num" style="font-weight:600;color:#c4b5fd">¥${f2(sum.fee)}</td>
+   <td class="num" style="font-weight:600;color:#ef4444">¥${f2(sum.refund)}</td>
    <td class="num" style="font-weight:700;color:${sum.profit>=0?'#34d399':'#f87171'}">¥${f2(sum.profit)}</td>
-   <td class="num" style="font-weight:600;color:${sum.profit>=0?'#34d399':'#f87171'}">${(sum.amt?sum.profit/sum.amt*100:0).toFixed(1)}%</td>
+   <td class="num" style="font-weight:600;color:${sum.profit>=0?'#34d399':'#f87171'}">${(sInc?sum.profit/sInc*100:0).toFixed(1)}%</td>
    <td class="num">${sum.o}</td><td class="num">${sum.qty}</td><td class="num">¥${f2(sum.o?sum.amt/sum.o:0)}</td><td class="num">—</td><td class="num">100.0%</td></tr>`;
 }
 
