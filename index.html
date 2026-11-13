@@ -37,13 +37,16 @@ select:focus,input:focus{border-color:var(--ac)}
 .kpi .v.gp{color:#34d399}
 .kpis.two{grid-template-columns:repeat(2,minmax(0,1fr))}
 .kpis.three{grid-template-columns:repeat(3,minmax(0,1fr))}
-.kpis.four{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.kpis.four .kpi{padding:12px 13px}
-.kpis.four .kpi .v{font-size:21px}
+.gridcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:14px;align-items:stretch}
+.gridcards .panel{padding:15px 17px;margin-bottom:0;display:flex;flex-direction:column}
+.gridcards .panel h2{font-size:13.5px}
+.gridcards .panel .hint{margin-bottom:10px}
+.gridcards .kpi.solo{background:none;border:0;padding:0;margin-top:auto}
+.gridcards .kpi.solo .v{font-size:26px;margin-top:0}
+.tagest{font-size:10px;font-weight:400;color:#8b95a5;border:1px solid #2b3441;border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:middle}
 .tscroll{overflow-x:auto}
 .grid{display:grid;grid-template-columns:minmax(0,1.62fr) minmax(0,1fr);gap:14px;margin-bottom:14px}
 .grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-bottom:14px}
-.grid2.uneven{grid-template-columns:minmax(0,.9fr) minmax(0,1.35fr)}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
 .panel h2{font-size:14px;margin:0 0 2px;font-weight:600}
 .panel .hint{font-size:11.5px;color:var(--mu);margin-bottom:14px}
@@ -132,7 +135,7 @@ footer{text-align:center;color:var(--gray);font-size:11.5px;margin-top:20px}
 .mgrid>div{background:#161b22;border:1px solid #1e252e;border-radius:12px;padding:12px 14px}
 .mgrid h4{margin:0 0 8px;font-size:12.5px;font-weight:600;color:#c3cad4}
 @media(max-width:900px){.mgrid{grid-template-columns:1fr}}
-@media(max-width:980px){.grid,.grid2{grid-template-columns:1fr}.kpis.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:980px){.grid,.grid2{grid-template-columns:1fr}}
 .sec{display:flex;align-items:center;gap:12px;margin:26px 0 13px;flex-wrap:wrap}
 .sec b{font-size:15px;letter-spacing:1.5px;padding:5px 14px;border-radius:8px;
  background:rgba(255,122,26,.13);border:1px solid rgba(255,122,26,.45);color:#ffa869}
@@ -179,22 +182,43 @@ footer{text-align:center;color:var(--gray);font-size:11.5px;margin-top:20px}
 
 <div class="sec"><b>收支分析</b><span>总收入（营收 + 运费回款）− 总支出（采购 + 物流 + 退款）= 毛利 · 随筛选条件实时更新</span><i></i></div>
 
-<div class="grid2 uneven" style="align-items:stretch">
+<div class="sec"><b>收入项</b><span>营收 + 平台运费回款 = 总收入</span><i></i></div>
+
+<div class="gridcards">
  <div class="panel board inc">
-  <h2>收入项</h2><div class="hint">营收 + 平台运费回款（计入总收入）</div>
-  <div class="kpis two">
-   <div class="kpi hero"><div class="k">营收 (CNY)</div><div class="v inc" id="f1">¥0</div><div class="d" id="f1d">—</div></div>
-   <div class="kpi" title="平台物流补贴：单件且申报单价 &lt; ¥100 的订单，每单补贴 ¥26.10；多件订单、单价 ≥ ¥100 及退款订单为 ¥0。规则已用 2026-11-13 结算数据校验，61/61 单判定一致"><div class="k">运费回款 (预估)</div><div class="v inc" id="f7">¥0</div><div class="d" id="f7d">—</div></div>
-  </div>
+  <h2>营收</h2><div class="hint">销售额口径，不含已取消</div>
+  <div class="kpi solo"><div class="v inc" id="f1">¥0</div><div class="d" id="f1d">—</div></div>
+ </div>
+ <div class="panel board inc">
+  <h2>运费回款 <span class="tagest">预估</span></h2>
+  <div class="hint" title="平台物流补贴：单件且申报单价 &lt; ¥100 的订单，每单补贴 ¥26.10；多件订单、单价 ≥ ¥100 及退款订单为 ¥0。规则已用 2026-11-13 结算数据校验，61/61 单判定一致">平台物流补贴</div>
+  <div class="kpi solo"><div class="v inc" id="f7">¥0</div><div class="d" id="f7d">—</div></div>
+ </div>
+ <div class="panel board inc">
+  <h2>总收入</h2><div class="hint">营收 + 运费回款</div>
+  <div class="kpi solo"><div class="v inc" id="f9">¥0</div><div class="d">毛利计算的收入基数</div></div>
+ </div>
+</div>
+
+<div class="sec exp"><b>支出项</b><span>采购支出 + 物流支出 + 退款 = 总支出</span><i></i></div>
+
+<div class="gridcards">
+ <div class="panel board exp">
+  <h2>采购支出</h2><div class="hint">采购单价 × 销售件数</div>
+  <div class="kpi solo"><div class="v exp" id="f2">¥0</div><div class="d" id="f2d">—</div></div>
  </div>
  <div class="panel board exp">
-  <h2>支出项</h2><div class="hint">采购支出 + 物流支出 + 退款（独立列示）</div>
-  <div class="kpis four">
-   <div class="kpi"><div class="k">采购支出</div><div class="v exp" id="f2">¥0</div><div class="d" id="f2d">—</div></div>
-   <div class="kpi"><div class="k">物流支出</div><div class="v exp" id="f3">¥0</div><div class="d" id="f3d">—</div></div>
-   <div class="kpi" title="退款：结算数据实测 退款 ÷ 销售回款 = 305.16 / 7687.61 = 3.97%，原始数据无退款字段，按销售额 × 3.97% 估算"><div class="k">退款</div><div class="v exp" id="f8">¥0</div><div class="d" id="f8d">—</div></div>
-   <div class="kpi"><div class="k">合计支出</div><div class="v exp" id="f4">¥0</div><div class="d" id="f4d">—</div></div>
-  </div>
+  <h2>物流支出</h2><div class="hint">飞特云商运单实际运费</div>
+  <div class="kpi solo"><div class="v exp" id="f3">¥0</div><div class="d" id="f3d">—</div></div>
+ </div>
+ <div class="panel board exp">
+  <h2>退款</h2>
+  <div class="hint" title="结算数据实测 退款 ÷ 销售回款 = 305.16 / 7687.61 = 3.97%，原始数据无退款字段，按销售额 × 3.97% 估算">按销售额 3.97% 估算</div>
+  <div class="kpi solo"><div class="v exp" id="f8">¥0</div><div class="d" id="f8d">—</div></div>
+ </div>
+ <div class="panel board exp">
+  <h2>合计支出</h2><div class="hint">采购 + 物流 + 退款</div>
+  <div class="kpi solo"><div class="v exp" id="f4">¥0</div><div class="d" id="f4d">—</div></div>
  </div>
 </div>
 
@@ -540,6 +564,7 @@ function fin(list){
   $('f6').textContent=mr.toFixed(1)+'%';
   $('f7').textContent='¥'+f2(sub);
   $('f7d').textContent='合格 '+sb.ok+'/'+sb.tot+' 单 · 日均 ¥'+f0(sb.avg)+' · 月化 ¥'+f0(sb.avg*30);
+  $('f9').textContent='¥'+f2(inc);
   const rows=[
     ['营收',rev,'#ff7a1a','销售额口径，不含已取消'],
     ['运费回款',sub,'#ff9f45','合格 '+sb.ok+'/'+sb.tot+' 单 × ¥'+SUBFEE.toFixed(2)],
