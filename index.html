@@ -568,7 +568,7 @@ function fin(list){
   $('f2').textContent='¥'+f2(cost);
   $('f2d').textContent='覆盖 '+cov.toFixed(1)+'%（件数）· 未配置 '+Object.keys(unks).length+' SKU';
   $('f3').textContent='¥'+f2(fee); $('f3d').textContent=lg.ch.length+' 单已计费 / 共 '+lg.arr.length+' 单';
-  $('f8').textContent='¥'+f2(refund); $('f8d').textContent='真实结算 '+rr.c+'/'+rr.n+' 单';
+  $('f8').textContent='¥'+f2(refund); $('f8d').textContent='真实结算 '+rr.c+'/'+rr.n+' 单 · 数据 '+RFM.d;
   $('f4').textContent='¥'+f2(exp); $('f4d').textContent='占总收入 '+(cr+fr+rf).toFixed(1)+'%';
   $('f5').textContent='¥'+f2(profit); $('f5d').textContent='总收入 ¥'+f2(inc)+' − 总支出 ¥'+f2(exp);
   $('f6').textContent=mr.toFixed(1)+'%';
