@@ -174,7 +174,7 @@ footer{text-align:center;color:var(--gray);font-size:11.5px;margin-top:20px}
  </div>
 </header>
 
-<div class="sec"><b>收支分析</b><span>收入项（营收 + 运费回款）− 支出项（采购 + 物流 + 销售冲回）= 毛利 · 随筛选条件实时更新</span><i></i></div>
+<div class="sec"><b>收支分析</b><span>收入项（营收 + 运费回款）− 支出项（采购 + 物流 + 退款）= 毛利 · 随筛选条件实时更新</span><i></i></div>
 
 <div class="grid2" style="align-items:stretch">
  <div class="panel board inc">
@@ -185,18 +185,18 @@ footer{text-align:center;color:var(--gray);font-size:11.5px;margin-top:20px}
   </div>
  </div>
  <div class="panel board exp">
-  <h2>支出项</h2><div class="hint">采购支出 + 物流支出 + 销售冲回（退款）</div>
+  <h2>支出项</h2><div class="hint">采购支出 + 物流支出 + 退款</div>
   <div class="kpis four">
    <div class="kpi"><div class="k">采购支出</div><div class="v exp" id="f2">¥0</div><div class="d" id="f2d">—</div></div>
    <div class="kpi"><div class="k">物流支出</div><div class="v exp" id="f3">¥0</div><div class="d" id="f3d">—</div></div>
-   <div class="kpi" title="销售冲回（退款）：结算数据实测 销售冲回 ÷ 销售回款 = 305.16 / 7687.61 = 3.97%，RAW 无退款字段，按销售额 × 3.97% 估算"><div class="k">销售冲回</div><div class="v exp" id="f8">¥0</div><div class="d" id="f8d">—</div></div>
+   <div class="kpi" title="退款：结算数据实测 退款 ÷ 销售回款 = 305.16 / 7687.61 = 3.97%，原始数据无退款字段，按销售额 × 3.97% 估算"><div class="k">退款</div><div class="v exp" id="f8">¥0</div><div class="d" id="f8d">—</div></div>
    <div class="kpi"><div class="k">合计支出</div><div class="v exp" id="f4">¥0</div><div class="d" id="f4d">—</div></div>
   </div>
  </div>
 </div>
 
 <div class="panel board gp">
- <h2>毛利</h2><div class="hint">收入项（营收 + 运费回款）− 支出项（采购 + 物流 + 销售冲回）</div>
+ <h2>毛利</h2><div class="hint">收入项（营收 + 运费回款）− 支出项（采购 + 物流 + 退款）</div>
  <div class="kpis two" style="margin:12px 0 0">
   <div class="kpi"><div class="k">毛利</div><div class="v gp" id="f5">¥0</div><div class="d" id="f5d">—</div></div>
   <div class="kpi"><div class="k">毛利率</div><div class="v gp" id="f6">0%</div><div class="d">毛利 / 收入项</div></div>
@@ -204,12 +204,12 @@ footer{text-align:center;color:var(--gray);font-size:11.5px;margin-top:20px}
 </div>
 
 <div class="grid2" style="align-items:start">
- <div class="panel"><h2>收支结构</h2><div class="hint">收入项 − 支出项 = 毛利 · 销售冲回按 3.97% 估算 · 物流仅统计已计费运单，近期未计费订单毛利会偏高</div><div id="finbars"></div></div>
+ <div class="panel"><h2>收支结构</h2><div class="hint">收入项 − 支出项 = 毛利 · 退款按 3.97% 估算 · 物流仅统计已计费运单，近期未计费订单毛利会偏高</div><div id="finbars"></div></div>
  <div class="panel"><h2>采购支出 TOP 10</h2><div class="hint">按 SKU 采购成本排序 · 采购成本 = 采购单价 × 件数 · 销售价格取区间均价</div><div id="costbars"></div></div>
 </div>
 
-<div class="panel" id="cmp" style="margin-bottom:14px"><h2>店铺对比</h2><div class="hint">收入项（销售额 + 运费回款）− 支出项（采购 + 物流 + 销售冲回）= 毛利 · 点击行可切换到该店铺</div>
-<div class="tscroll"><table><thead><tr><th>店铺</th><th class="num">销售额</th><th class="num">运费回款</th><th class="num">采购支出</th><th class="num">物流支出</th><th class="num">销售冲回</th><th class="num">毛利</th><th class="num">毛利率</th><th class="num">订单数</th><th class="num">件数</th><th class="num">客单价</th><th class="num">取消率</th><th class="num">占比</th></tr></thead>
+<div class="panel" id="cmp" style="margin-bottom:14px"><h2>店铺对比</h2><div class="hint">收入项（销售额 + 运费回款）− 支出项（采购 + 物流 + 退款）= 毛利 · 点击行可切换到该店铺</div>
+<div class="tscroll"><table><thead><tr><th>店铺</th><th class="num">销售额</th><th class="num">运费回款</th><th class="num">采购支出</th><th class="num">物流支出</th><th class="num">退款</th><th class="num">毛利</th><th class="num">毛利率</th><th class="num">订单数</th><th class="num">件数</th><th class="num">客单价</th><th class="num">取消率</th><th class="num">占比</th></tr></thead>
 <tbody id="cmpb"></tbody></table></div></div>
 
 <div class="mask" id="lmask">
@@ -333,7 +333,7 @@ const DMAX=RAW.reduce((m,r)=>r.t>m?r.t:m,'');
 
 // 运费回款（平台物流补贴）预估：单件 + 申报单价 < ¥100 + 未取消 → ¥26.10，其余 ¥0
 const SUBFEE=26.10, SUBLIMIT=100;
-// 销售冲回（退款）预估：2026-11-13 结算实测 305.16 / 7687.61 = 3.9691%，RAW 无退款字段，按销售额比例估算
+// 退款预估：2026-11-13 结算实测 退款/销售回款 = 305.16 / 7687.61 = 3.9691%，原始数据无退款字段，按销售额比例估算
 const REFUND_RATE=0.039691;
 const ORD={};
 RAW.forEach(r=>{(ORD[r.o]||(ORD[r.o]=[])).push(r);});
@@ -542,7 +542,7 @@ function fin(list){
     ['运费回款',sub,'#ff9f45','合格 '+sb.ok+'/'+sb.tot+' 单 × ¥'+SUBFEE.toFixed(2)],
     ['采购支出',cost,'#38bdf8','采购价覆盖 '+cov.toFixed(1)+'%（按件数）'],
     ['物流支出',fee,'#a78bfa','仅已计费运单'],
-    ['销售冲回',refund,'#ef4444','按销售额 '+(REFUND_RATE*100).toFixed(2)+'% 估算'],
+    ['退款',refund,'#ef4444','按销售额 '+(REFUND_RATE*100).toFixed(2)+'% 估算'],
     ['毛利',profit,'#34d399','收入项 − 支出项']
   ];
   const mx=Math.max(1,...rows.map(r=>Math.abs(r[1])));
