@@ -371,6 +371,8 @@ const RFS={"PO-045-00042607166073939":1,"PO-045-00045634878073726":1,"PO-045-000
 const RFM={"d":"2026-11-16 15:28","po":490,"orders":1155,"refund":4683.58};
 // 推广费用：TEMU 商品推广后台「商品数据报表」花费，按「店铺|YYYY-MM」月度汇总（店铺级，不拆分到 SKU）
 const ADS={"RosePick|2026-10":229.43,"RosePick|2026-11":233.06};
+// ADSI：每个「店铺|月」的实际覆盖区间（TEMU 导出为区间合计，无日粒度）
+const ADSI={"RosePick|2026-10":["2026-10-10","2026-10-31"],"RosePick|2026-11":["2026-11-01","2026-11-16"]};
 const ADSM={"d":"2026-11-16 21:45","months":2,"total":462.49,"gran":"月","src":"TEMU 商品推广 · 商品数据报表","note":"RosePick 推广数据自 2026-10-10 起"};
 const ORD={};
 RAW.forEach(r=>{(ORD[r.o]||(ORD[r.o]=[])).push(r);});
@@ -555,48 +557,43 @@ function rfd(list){
   return {r:Math.round(r*100)/100,c:c,n:Object.keys(seen).length};
 }
 
-// 推广费用：商品推广后台花费（店铺级、月度口径），按当前日期筛选与店铺汇总；区间未覆盖整月时按天折算
+// 推广费用：商品推广后台花费（店铺级、月度口径），按每个月的实际覆盖区间与当前日期筛选汇总；区间只覆盖部分时按天折算
+function adRange(k,d1,d2){
+  const i=k.indexOf('|'), d=k.slice(i+1);
+  const ms=d+'-01', me=d+'-'+String(new Date(+d.slice(0,4),+d.slice(5,7),0).getDate()).padStart(2,'0');
+  const iv=ADSI[k]||[ms,me];
+  const a=d1&&d1>iv[0]?d1:iv[0], b=d2&&d2<iv[1]?d2:iv[1];
+  if(a>b) return null;
+  const nd=Math.round((new Date(b)-new Date(a))/86400000)+1;
+  const tot=Math.round((new Date(iv[1])-new Date(iv[0]))/86400000)+1;
+  return {nd:nd, full:nd>=tot};
+}
 function adAgg(){
   if(DR.sku||DR.cat||DR.st) return {v:0,days:0,na:true,pr:0};
   const d1=$('d1').value,d2=$('d2').value;
   let v=0,n=0,pr=0;
   for(const k in ADS){
-    const i=k.indexOf('|'),s=k.slice(0,i),d=k.slice(i+1);
+    const i=k.indexOf('|'),s=k.slice(0,i);
     if(ST.shop&&ST.shop!=='全部'&&s!==ST.shop) continue;
-    const amt=ADS[k];
-    if(d.length===7){
-      const y=+d.slice(0,4),m=+d.slice(5,7),dim=new Date(y,m,0).getDate();
-      const ms=d+'-01', me=d+'-'+String(dim).padStart(2,'0');
-      const a=d1&&d1>ms?d1:ms, b=d2&&d2<me?d2:me;
-      if(a>b) continue;
-      const nd=Math.round((new Date(b)-new Date(a))/86400000)+1;
-      if(nd<dim){ pr=1; v+=amt*nd/dim; } else v+=amt;
-      n+=nd;
-    }else{
-      if(d1&&d<d1) continue; if(d2&&d>d2) continue;
-      v+=amt; n++;
-    }
+    const r=adRange(k,d1,d2);
+    if(!r) continue;
+    if(r.full) v+=ADS[k]; else { pr=1; v+=ADS[k]*r.nd/adRangeDays(k); }
+    n+=r.nd;
   }
   return {v:Math.round(v*100)/100,days:n,na:false,pr};
+}
+function adRangeDays(k){
+  const iv=ADSI[k]; if(!iv) return 1;
+  return Math.round((new Date(iv[1])-new Date(iv[0]))/86400000)+1;
 }
 function adShop(s){
   const d1=$('d1').value,d2=$('d2').value;
   let v=0;
   for(const k in ADS){
-    const i=k.indexOf('|'),sh=k.slice(0,i),d=k.slice(i+1);
-    if(sh!==s) continue;
-    const amt=ADS[k];
-    if(d.length===7){
-      const y=+d.slice(0,4),m=+d.slice(5,7),dim=new Date(y,m,0).getDate();
-      const ms=d+'-01', me=d+'-'+String(dim).padStart(2,'0');
-      const a=d1&&d1>ms?d1:ms, b=d2&&d2<me?d2:me;
-      if(a>b) continue;
-      const nd=Math.round((new Date(b)-new Date(a))/86400000)+1;
-      v+=nd<dim?amt*nd/dim:amt;
-    }else{
-      if(d1&&d<d1) continue; if(d2&&d>d2) continue;
-      v+=amt;
-    }
+    if(k.slice(0,k.indexOf('|'))!==s) continue;
+    const r=adRange(k,d1,d2);
+    if(!r) continue;
+    v+=r.full?ADS[k]:ADS[k]*r.nd/adRangeDays(k);
   }
   return Math.round(v*100)/100;
 }
