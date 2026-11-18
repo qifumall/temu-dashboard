@@ -76,6 +76,10 @@ tbody tr:hover{background:#1a2029}
 .nm div{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .id{color:#6b7686;font-size:11px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .empty{text-align:center;color:var(--gray);padding:34px 0}
+.empty-notice{display:none;align-items:center;justify-content:space-between;gap:14px;margin:10px 0 14px;padding:12px 16px;border:1px solid #55402a;border-radius:10px;background:#211b14;color:#f1c27d;font-size:13px;line-height:1.5}
+.empty-notice.on{display:flex}
+.empty-notice button{flex:none;border:1px solid #85551e;border-radius:7px;padding:6px 10px;background:#302215;color:#ffb454;font:inherit;cursor:pointer}
+@media(max-width:600px){.empty-notice{align-items:flex-start;flex-direction:column}}
 .btn{background:rgba(255,122,26,.12);border:1px solid rgba(255,122,26,.45);color:#ffa869;border-radius:8px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
 .btn:hover{background:rgba(255,122,26,.2)}
 footer{text-align:center;color:var(--gray);font-size:11.5px;margin-top:20px}
@@ -179,6 +183,8 @@ footer{text-align:center;color:var(--gray);font-size:11.5px;margin-top:20px}
   <button class="btn" id="csv">导出明细</button>
  </div>
 </header>
+
+<div id="emptyNotice" class="empty-notice" role="status" aria-live="polite"></div>
 
 <div class="sec"><b>收支分析</b><span>总收入（营收 + 运费回款）− 总支出（采购 + 物流 + 退款 + 推广）= 毛利 · 随筛选条件实时更新</span><i></i></div>
 
@@ -700,6 +706,21 @@ function costTop(list){
 
 function render(){
   const all=pool(), shown=filtered(), list=shown.filter(r=>r.st!=='已取消');
+  const notice=$('emptyNotice');
+  if(!all.length){
+    const eligible=RAW.filter(r=>(ST.shop==='全部'||r.shop===ST.shop)&&(ST.site==='全部'||r.site===ST.site));
+    const latest=eligible.reduce((m,r)=>r.t>m?r.t:m,'');
+    notice.innerHTML='<span>当前日期范围内没有订单记录。'+(latest?'此筛选条件下最新订单日期为 '+latest+'。':'当前店铺与站点暂无订单数据。')+'</span><button type="button" id="showAllData">查看全部数据</button>';
+    notice.classList.add('on');
+    $('showAllData').onclick=()=>preset('0');
+  }else if(!shown.length){
+    notice.innerHTML='<span>当前筛选条件没有匹配记录；请检查商品关键词、下钻条件或取消订单选项。</span><button type="button" id="clearFiltersNotice">清除筛选</button>';
+    notice.classList.add('on');
+    $('clearFiltersNotice').onclick=()=>$('cleard').click();
+  }else{
+    notice.classList.remove('on');
+    notice.innerHTML='';
+  }
   kpis(list,all); trendChart(list); donut(all);
   const sku=group(list,r=>r.sku).sort((x,y)=>y.a-x.a).slice(0,8)
     .map(x=>({a:x.a,k:x.k,label:x.n.length>34?x.n.slice(0,34)+'…':x.n}));
@@ -730,6 +751,9 @@ function logi(list){
     if(d2 && d>d2) return;
     rows.push({shop:s, po:k.slice(k.indexOf('|')+1), d:d, f:l.f||0, w:l.w||0, c:l.c||'', s:l.s||'', amt:poAmt[k]||0});
   });
+  $('lhint').textContent=rows.length
+    ? '数据源：飞特云商运单 · 发货日期 '+(d1||'不限')+' 至 '+(d2||'不限')+' · 运费为系统回写的物流运费(CNY)'
+    : '此日期范围内没有飞特运单 · 物流统计按发货日期筛选，与订单创建日期口径不同';
   const ch=rows.filter(o=>o.f>0);
   const fee=ch.reduce((a,o)=>a+o.f,0), amt=ch.reduce((a,o)=>a+o.amt,0), wt=ch.reduce((a,o)=>a+o.w,0);
   $('l1').textContent='¥'+f2(fee);
