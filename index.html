@@ -481,7 +481,7 @@ function trendChart(list){
 }
 
 function donut(all){
-  const order=[['待发货','#f59e0b'],['已发货','#38bdf8'],['已签收','#34d399'],['已取消','#5b6675']];
+  const order=[['平台处理中','#a78bfa'],['待发货','#f59e0b'],['已发货','#38bdf8'],['已签收','#34d399'],['已取消','#5b6675']];
   const cnt={}; all.forEach(r=>{ cnt[r.st]=(cnt[r.st]||0)+1; });
   const tot=all.length||1;
   let off=0,seg='';
